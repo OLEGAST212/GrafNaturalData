@@ -134,3 +134,52 @@ fog.update_layout(
 # Вывод графика на экран
 fog.update_layout(height=1200, width=1900, showlegend=False, font_size=16, )
 fog.show(config={'displayModeBar': False})
+
+time = y_data[8]
+direction = y_data[9]
+color_scale = [
+    [1, 'white'],
+    [0, 'red']
+]
+
+wind_directions = {
+    0: 'Север, 0/360', 22.5: 'Северо-северо-восток, 22.5', 45: 'Северо-восток, 45', 67.5: 'Востоко-северо-восток, 67.5',
+    90: 'Восток, 90', 112.5: 'Востоко-юго-восток, 112.5', 135: 'Юго-восток, 135', 157.5: 'Юго-юго-восток, 157.5',
+    180: 'Юг, 180', 202.5: 'Юго-юго-запад, 202.5', 225: 'Юго-запад, 225', 247.5: 'Западо-юго-запад, 247.5',
+    270: 'Запад, 270', 292.5: 'Западо-северо-запад, 292.5', 315: 'Северо-запад, 315',
+    337.5: 'Северо-северо-запад, 337.5',
+}
+
+hover_text = [f"Скорость ветра: {t}, Направление: {wind_directions[a]}" for t, a in zip(time, direction)]
+
+fyg = go.Figure(data=go.Scatterpolar(
+    r=time,
+    theta=direction,
+    mode='markers',
+    text=hover_text,
+    hoverinfo='text',
+    marker=dict(
+        size=10,
+        color=time,  # Устанавливаем цвет в зависимости от y_data[8]
+        colorscale=color_scale,
+        reversescale=True,  # Разворачиваем цветовую шкалу
+        showscale=False
+    ),
+))
+
+# Настройка внешнего вида диаграммы
+fyg.update_layout(
+    polar=dict(
+        radialaxis=dict(
+            visible=False,
+            range=[0, max(time)]
+        ),
+    ),
+    showlegend=False,
+    title='Направление ветра от скорости ветра в виде Розы ветров',
+    title_x=0.5,
+)
+
+# Вывод графика на экран
+fyg.update_layout(height=1200, width=1900, showlegend=False, font_size=16, )
+fyg.show(config={'displayModeBar': False})
