@@ -1,9 +1,8 @@
 import csv
 import random
 from pprint import pprint
-
-from plotly import graph_objs as go
-import plotly.subplots as sp
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 
 FILENAMES = ['DATA.CSV', 'DATA.CSV', 'DATA.CSV', 'DATA.CSV']
 
@@ -69,7 +68,7 @@ def extrapolate_weather_data():
         for i in y_data:
             # avg_data.append(sum(i) / len(i))
             avg_data[-1].append(sum(i) / len(i) + random.randint(int(min(i)) - 1,
-                                                             int(max(i)) + 1))
+                                                                 int(max(i)) + 1))
     data = []
     axt_ver_1 = extrapolation(avg_data[0][0], avg_data[1][0], 5)
     axt_ver_2 = extrapolation(avg_data[2][0], avg_data[3][0], 5)
@@ -77,13 +76,60 @@ def extrapolate_weather_data():
     for t1, t2 in zip(axt_ver_1, axt_ver_2):
         data.append(extrapolation(t1, t2, 16))
     return data
+def drawing_graphs():
+    line_names = ['Аммиака', 'Угарного газа', 'Оксида азота', 'Пыли', 'Ультрафиолета', 'Температуры', 'Давления',
+                  'Влажности',
+                  'Скорости ветра', 'Направление ветра от времени']
+
+    data = extrapolate_weather_data()
+
+    # Создаем субплот для размещения 10 графиков
+    fig = make_subplots(rows=3, cols=3, subplot_titles=[f"График {line_names[i]}" for i in range(9)])
+
+    # Добавляем тепловые графики на каждый субплот
+    for i, subplot_row in enumerate([1, 2, 3]):
+        for j, subplot_col in enumerate([1, 2, 3]):
+            subplot_index = i * 3 + j
+            if subplot_index < 9:
+                # Инвертируем порядок строк
+
+                fig.add_trace(
+                    go.Heatmap(
+                        z=data,
+                        # text=[list(map(str, row)) for row in data],
+                        # texttemplate="%{text}",
+                        colorscale='Viridis',
+                        hovertemplate="Значение в точке = %{z:.2f}<extra></extra>",
+
+                    ),
+                    row=subplot_row,
+                    col=subplot_col
+                )
+
+                # Настройка осей и заголовка для каждого графика
+                fig.update_xaxes(ticks='', tickvals=list(range(len(data[0]))), row=subplot_row,
+                                 col=subplot_col)
+                fig.update_yaxes(ticks='', tickvals=list(range(len(data))), autorange='reversed',
+                                 row=subplot_row, col=subplot_col)
+
+    # Настройка общего размера и заголовка
+    fig.update_layout(
+        width=2000,  # Общая ширина
+        height=1500,  # Общая высота
+
+    )
+
+    config = dict({'displayModeBar': False})
+
+    # Отображение графика без верхней панели
+    fig.show(config=config)
 
 
 def main() -> None:
     """
     Запуск программы.
     """
-    print(extrapolate_weather_data())
+    drawing_graphs()
 
 
 if __name__ == '__main__':
