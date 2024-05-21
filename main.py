@@ -3,7 +3,7 @@ import random
 from pprint import pprint
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
-
+import matplotlib.pyplot as plt
 FILENAMES = ['DATA.CSV', 'DATA.CSV', 'DATA.CSV', 'DATA.CSV']
 
 
@@ -81,55 +81,27 @@ def extrapolate_weather_data():
     return data
 def drawing_graphs():
     line_names = ['Аммиака', 'Угарного газа', 'Оксида азота', 'Пыли', 'Ультрафиолета', 'Температуры', 'Давления',
-                  'Влажности',
-                  'Скорости ветра', 'Направление ветра от времени']
+                  'Влажности', 'Скорости ветра', 'Направление ветра от времени']
 
     data = extrapolate_weather_data()
 
-    # Создаем субплот для размещения 10 графиков
-    fig = make_subplots(rows=3, cols=3, subplot_titles=[f"График {line_names[i]}" for i in range(9)])
+    # Размер фигуры в дюймах
+    fig_width = 2000 / 100  # 2000 пикселей / 100 dpi = 20 дюймов
+    fig_height = 1500 / 100  # 1500 пикселей / 100 dpi = 15 дюймов
 
-    # Добавляем тепловые графики на каждый субплот
+    fig, axs = plt.subplots(3, 3, figsize=(fig_width, fig_height))
+
     counter = 0
-    for i, subplot_row in enumerate([1, 2, 3]):
-        for j, subplot_col in enumerate([1, 2, 3]):
-            subplot_index = i * 3 + j
-            if subplot_index < 9:
-                # Инвертируем порядок строк
-
-                fig.add_trace(
-                    go.Heatmap(
-                        z=data[counter],
-                        # text=[list(map(str, row)) for row in data],
-                        # texttemplate="%{text}",
-                        colorscale='Viridis',
-                        hovertemplate="Значение в точке = %{z:.2f}<extra></extra>",
-
-                    ),
-                    row=subplot_row,
-                    col=subplot_col
-                )
-
-                # Настройка осей и заголовка для каждого графика
-                fig.update_xaxes(ticks='', tickvals=list(range(len(data[0]))), row=subplot_row,
-                                 col=subplot_col)
-                fig.update_yaxes(ticks='', tickvals=list(range(len(data))), autorange='reversed',
-                                 row=subplot_row, col=subplot_col)
+    for i in range(3):
+        for j in range(3):
+            if counter < 9:
+                im = axs[i, j].imshow(data[counter], cmap='viridis')
+                axs[i, j].set_title(f"График {line_names[counter]}")
+                fig.colorbar(im, ax=axs[i, j])
                 counter += 1
 
-    # Настройка общего размера и заголовка
-    fig.update_layout(
-        width=2000,  # Общая ширина
-        height=1500,  # Общая высота
-
-    )
-
-    config = dict({'displayModeBar': False})
-
-    # Отображение графика без верхней панели
-    fig.show(config=config)
-
-
+    plt.tight_layout()
+    plt.show()
 def main() -> None:
     """
     Запуск программы.
