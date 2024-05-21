@@ -70,11 +70,14 @@ def extrapolate_weather_data():
             avg_data[-1].append(sum(i) / len(i) + random.randint(int(min(i)) - 1,
                                                                  int(max(i)) + 1))
     data = []
-    axt_ver_1 = extrapolation(avg_data[0][0], avg_data[1][0], 5)
-    axt_ver_2 = extrapolation(avg_data[2][0], avg_data[3][0], 5)
+    for k, i in enumerate(avg_data[0]):
+        data.append([])
+        axt_ver_1 = extrapolation(avg_data[0][k], avg_data[1][k], 5)
+        axt_ver_2 = extrapolation(avg_data[2][k], avg_data[3][k], 5)
 
-    for t1, t2 in zip(axt_ver_1, axt_ver_2):
-        data.append(extrapolation(t1, t2, 16))
+        for t1, t2 in zip(axt_ver_1, axt_ver_2):
+            data[-1].append(extrapolation(t1, t2, 16))
+    pprint(data)
     return data
 def drawing_graphs():
     line_names = ['Аммиака', 'Угарного газа', 'Оксида азота', 'Пыли', 'Ультрафиолета', 'Температуры', 'Давления',
@@ -87,6 +90,7 @@ def drawing_graphs():
     fig = make_subplots(rows=3, cols=3, subplot_titles=[f"График {line_names[i]}" for i in range(9)])
 
     # Добавляем тепловые графики на каждый субплот
+    counter = 0
     for i, subplot_row in enumerate([1, 2, 3]):
         for j, subplot_col in enumerate([1, 2, 3]):
             subplot_index = i * 3 + j
@@ -95,7 +99,7 @@ def drawing_graphs():
 
                 fig.add_trace(
                     go.Heatmap(
-                        z=data,
+                        z=data[counter],
                         # text=[list(map(str, row)) for row in data],
                         # texttemplate="%{text}",
                         colorscale='Viridis',
@@ -111,6 +115,7 @@ def drawing_graphs():
                                  col=subplot_col)
                 fig.update_yaxes(ticks='', tickvals=list(range(len(data))), autorange='reversed',
                                  row=subplot_row, col=subplot_col)
+                counter += 1
 
     # Настройка общего размера и заголовка
     fig.update_layout(
