@@ -1,9 +1,8 @@
 import csv
-import random
 from pprint import pprint
 import matplotlib.pyplot as plt
-FILENAMES = ['DATA.CSV', 'DATA.CSV', 'DATA.CSV', 'DATA.CSV']
-
+# FILENAMES = ['Test/1.csv', 'Test/2.csv', 'Test/3.csv', 'Test/4.csv']
+FILENAMES = ['Test/5.csv', 'Test/6.csv', 'Test/7.csv', 'Test/8.csv']
 
 
 def get_datas(filename: str) -> tuple:
@@ -27,7 +26,10 @@ def get_datas(filename: str) -> tuple:
             continue
         del row[0]
         del row[-1]
+        del row[-1]
+        print(y_data)
         for k, i in enumerate(row):
+            print(len(y_data), k, i)
             y_data[k].append(float(i))
 
     return y_data
@@ -52,9 +54,9 @@ def extrapolate_weather_data():
         del y_data[-1]
         avg_data.append([])
         for i in y_data:
-            # avg_data.append(sum(i) / len(i))
-            avg_data[-1].append(sum(i) / len(i) + random.randint(int(min(i)) - 1,
-                                                                 int(max(i)) + 1))
+            avg_data[-1].append(sum(i) / len(i))
+            # avg_data[-1].append(sum(i) / len(i) + random.randint(int(min(i)) - 1,
+            #                                                      int(max(i)) + 1))
     data = []
     for k, i in enumerate(avg_data[0]):
         data.append([])
